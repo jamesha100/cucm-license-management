@@ -7,7 +7,7 @@ These strategies are based upon using SQL database queries to collect and update
 
 ## CUCM Licensing Overview
 
-CUCM licensing is user based with different license types supporting different device types and numbers.
+CUCM licensing is user based with different license types supporting different device types and numbers. The available license types are listed below.
 
 - UCL Basic - supports **one** "basic" device of the types listed below:
     - Analogue device - this would typically be one port on an analogue telephony adapter or an FXS port on a Cisco gateway.
@@ -20,5 +20,8 @@ CUCM licensing is user based with different license types supporting different d
 - UCL Enhanced Plus - supports **two** user devices of any type. These devices must be allocated to the same user. A typical example for this license type would be a user who has a physical IP phone for use in the office and Cisco Jabber for Windows installed on their laptop for use whilst working remotely.
 - CUWL Standard - supports up to **ten** user devices of any type. These devices must be allocated to the same user. A typical example for this license type would be a user who has a physical IP phone for use in the office, Cisco Jabber for Windows installed on their laptop for use whilst working remotely and Cisco Jabber for iPhone on their mobile phone. CUWL Standard also provides a license for Cisco Unity Connection messaging.
 - CUWL Meetings - supports up to **ten** user devices of any type. These devices must be allocated to the same user. A typical example for this license type would be a user who has a physical IP phone for use in the office, Cisco Jabber for Windows installed on their laptop for use whilst working remotely and Cisco Jabber for iPhone on their mobile phone. CUWL Standard also provides a license for Cisco Unity Connection messaging and a personal license for multi-party meeting technology using Cisco Meeting Server or WebEx.
+- TelePresence Room - this license type supports **one** Cisco "room" based video conferencing device. These range from the 55" single screen devices, such as the WebEx Room 55, to the three screen immersive TelePresence systems such as the IX9000. This license type also covers codec devices, such as the WebEx Room Kit Pro, which are used with third party screens.
 
 For more details on CUCM licensing refer to the Cisco document [CUCM Licensing At A Glance](https://www.cisco.com/c/dam/en/us/products/collateral/unified-communications/unified-communications-licensing/C45_523902_11_9_licensing_aag_v5a_1.pdf).
+
+## Typical License Issues
