@@ -7,3 +7,17 @@ These strategies are based upon using SQL database queries to collect and update
 
 ## CUCM Licensing Overview
 
+CUCM licensing is user based with different license types supporting different device types and numbers.
+
+- UCL Basic - supports one "basic" device of the types listed below:
+    - Analogue device - this would typically be one port on an analogue telephony adapter or an FXS port on a Cisco gateway 
+    - Cisco 3905 IP phone
+    - Cisco 6901 IP phone
+- UCL Essential - supports one "essential" device of the types listed below:
+    - Cisco 7811 IP phone
+    - Cisco 7821 IP phone
+- UCL Enhanced - supports one user device of any type. This includes physical IP phones, softphone/mobile devices such as Jabber and personal video devices such as the Cisco DX80. This license type does **not** support room based video endpoints such as the Cisco WebEx Room 55.
+- UCL Enhanced Plus - supports two user devices of any type. These devices must be allocated to the same user. A typical example for this license type would be a user who has a physical IP phone for use in the office and Cisco Jabber for Windows installed on their laptop for use whilst working remotely.
+- CUWL Standard - supports up to ten user devices of any type. These devices must be allocated to the same user. A typical example for this license type would be a user who has a physical IP phone for use in the office, Cisco Jabber for Windows installed on their laptop for use whilst working remotely and Cisco Jabber for iPhone on their mobile phone. CUWL Standard also provides a license for Cisco Unity Connection messaging.
+- CUWL Meetings - supports up to ten user devices of any type. These devices must be allocated to the same user. A typical example for this license type would be a user who has a physical IP phone for use in the office, Cisco Jabber for Windows installed on their laptop for use whilst working remotely and Cisco Jabber for iPhone on their mobile phone. CUWL Standard also provides a license for Cisco Unity Connection messaging and a personal license for multi-party meeting technology using Cisco Meeting Server or WebEx.
+
