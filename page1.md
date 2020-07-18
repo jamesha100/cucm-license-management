@@ -26,6 +26,10 @@ For more details on CUCM licensing refer to the Cisco document [CUCM Licensing A
 
 ## Typical License Issues
 
-For CUCM licensing to work as designed devices must be assigned owners.
+For CUCM licensing to work as designed when using license types that support multiple devices (UCL Enhanced Plus, CUWL Standard or CUWL Meetings) owners must be assigned to devices.
+
+This is done on the CUCM device configuration page as shown below.
 
 ![Device Owner ID](/images/ownerid.png)
+
+The *Owner* field must be set to *User* and the appropriate username selected for the *Owner User ID* field.
