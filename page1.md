@@ -1,7 +1,7 @@
 ## Introduction
 
 Cisco Unified Communications Manager 9 introduced a user based licensing model based upon user ownership of physical and software based endpoints. This model generally works well but problems can be encountered if the ownership of devices is not configured correctly. This series of articles provides an overview of licensing and strategies to ensure that licenses are used efficiently.
-These strategies are based upon using SQL database queries to collect and updated device ownership.
+These strategies are based upon using SQL database queries to collect and update device ownership. Where multiple database operations are required Python scripts will be used in conjunction with the CUCM AXL API to perform operations.
 
 **Note that no liability is accepted for any system damage caused as a result of following instructions in this series of articles.**
 
@@ -42,4 +42,8 @@ The *Owner* field must be set to *User* and the appropriate username selected fo
 -If a user is assigned as the owner of two devices then a UCL Enhanced Plus license will be consumed.
 -If a user is assigned as the user of between three and ten devices then a CUWL license will be consumed. From the CUCM device licensing perspective there is no difference between CUWL Standard and CUWL Meetings althougb the former seem to be allocated before the latter.
 
-If device ownership is not configured correctly then the wrong license types can be consumed. For example, if a user has a deskphone, Jabber for Windows, Jabber for iPhone and Jabber for iPad then all their devices could be covered by a single CUWL Standard license. If the ownership of these devices is not configured then four UCL Enhanced licenses would be allocated.
+If device ownership is not configured correctly then the wrong license types can be consumed. For example, if a user has a deskphone, Jabber for Windows, Jabber for iPhone and Jabber for iPad then all their devices could be covered by a single CUWL Standard license. If the ownership of these devices is not configured then four UCL Enhanced licenses would be allocated. If the CUCM system in this example only had CUWL Standard licenses available then four of this license type would be consumed - CUCM borrows from the higher tier - which is obviously inefficient in terms of license usage and cost.
+
+## Typical License Issues
+
+
