@@ -25,3 +25,7 @@ CUCM licensing is user based with different license types supporting different d
 For more details on CUCM licensing refer to the Cisco document [CUCM Licensing At A Glance](https://www.cisco.com/c/dam/en/us/products/collateral/unified-communications/unified-communications-licensing/C45_523902_11_9_licensing_aag_v5a_1.pdf).
 
 ## Typical License Issues
+
+For CUCM licensing to work as designed devices must be assigned owners.
+
+![Device Owner ID](/images/ownerid.png)
