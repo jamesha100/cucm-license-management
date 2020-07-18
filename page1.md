@@ -22,9 +22,13 @@ CUCM licensing is user based with different license types supporting different d
 - CUWL Meetings - supports up to **ten** user devices of any type. These devices must be allocated to the same user. A typical example for this license type would be a user who has a physical IP phone for use in the office, Cisco Jabber for Windows installed on their laptop for use whilst working remotely and Cisco Jabber for iPhone on their mobile phone. CUWL Standard also provides a license for Cisco Unity Connection messaging and a personal license for multi-party meeting technology using Cisco Meeting Server or WebEx.
 - TelePresence Room - this license type supports **one** Cisco "room" based video conferencing device. These range from the 55" single screen devices, such as the WebEx Room 55, to the three screen immersive TelePresence systems such as the IX9000. This license type also covers codec devices, such as the WebEx Room Kit Pro, which are used with third party screens.
 
+Licenses are allocated when the devices are configured on CUCM and are consumed even if the device is not registered with CUCM.
+
+CUCM has the concept of borrowing licenses from higher tiers if insufficient licenses of the appropriate type are available. For example, if no UCL Enhanced licenses were available and a new 7841 IP phone were configured, CUCM will attempt to use a license of a higher tier (UCL Enhanced Plus if available, then CUWL Standard, then CUWL Meetings) to license the new device. If no higher tier license is available CUCM will enter a license non-compliance state. The CUCM administrator will be informed of this on the CUCM administration login page. The system will continue to operate for a grace period of 60 days during which the administrator should resolve the issue by either purchasing more licenses to cover the overage or deleting devices until a compliant state is reached. After 60 days if the system is still non-compliant it will enter a read-only state where services will continue to operate but no configuration changes are possible. Cisco TAC must be contacted to remove the read-only state.
+
 For more details on CUCM licensing refer to the Cisco document [CUCM Licensing At A Glance](https://www.cisco.com/c/dam/en/us/products/collateral/unified-communications/unified-communications-licensing/C45_523902_11_9_licensing_aag_v5a_1.pdf).
 
-## Typical License Issues
+## License Usage
 
 For CUCM licensing to work as designed when using license types that support multiple devices (UCL Enhanced Plus, CUWL Standard or CUWL Meetings) owners must be assigned to devices.
 
@@ -33,3 +37,9 @@ This is done on the CUCM device configuration page as shown below.
 ![Device Owner ID](/images/ownerid.png)
 
 The *Owner* field must be set to *User* and the appropriate username selected for the *Owner User ID* field.
+
+-If a user is assigned as the owner of just one device then a UCL Enhanced license will be consumed (assuming that the user device does not fall into the UCL Basic or UCL Essential categories).
+-If a user is assigned as the owner of two devices then a UCL Enhanced Plus license will be consumed.
+-If a user is assigned as the user of between three and ten devices then a CUWL license will be consumed. From the CUCM device licensing perspective there is no difference between CUWL Standard and CUWL Meetings althougb the former seem to be allocated before the latter.
+
+If device ownership is not configured correctly then the wrong license types can be consumed. For example, if a user has a deskphone, Jabber for Windows, Jabber for iPhone and Jabber for iPad then all their devices could be covered by a single CUWL Standard license. If the ownership of these devices is not configured then four UCL Enhanced licenses would be allocated.
