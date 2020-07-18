@@ -98,7 +98,6 @@ Updating the query to only return results where the value of *tkclass* is equal 
 admin:run sql select name,description from device where tkclass = '1'
 name                                               description
 ================================================== ============================================================
-Technical                                          Tech Hunt List
 UCCX_889301                                        Technical-1
 UCCX_889302                                        Technical-1
 UCCX_889303                                        Technical-1
@@ -109,6 +108,6 @@ SEP07872776AB23                                    Extension Mobility 1
 SEPA456C561D234                                    Extension Mobility 2
 SEP0786AC561274                                    Extension Mobility 3
 ```
-
+This list of devices is better but notice the devices with a name starting UCCX. These are CTI ports used by Cisco Contact Center Express (applications such as attendant consoles also use CTI ports). It is possible to filter these using the *tkproduct* field in the device table.
 
 
