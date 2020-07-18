@@ -1,7 +1,10 @@
-## Introduction
+## Article 1 - Introduction and CUCM Licensing Overview
 
 Cisco Unified Communications Manager 9 introduced a user based licensing model based upon user ownership of physical and software based endpoints. This model generally works well but problems can be encountered if the ownership of devices is not configured correctly. This series of articles provides an overview of licensing and strategies to ensure that licenses are used efficiently.
 These strategies are based upon using SQL database queries to collect and update device ownership. Where multiple database operations are required Python scripts will be used in conjunction with the CUCM AXL API to perform operations.
+
+- Article 1 - Introduction and CUCM Licensing Overview.
+- [Article 2 - Basic SQL Commands to Monitor and Update Licensing.](https://jamesha100.github.io/cucm-license-management/page2)
 
 **Note that no liability is accepted for any system damage caused as a result of following instructions in this series of articles.**
 
@@ -46,4 +49,8 @@ If device ownership is not configured correctly then the wrong license types can
 
 ## Typical License Issues
 
+This section will detail some typical license issues encountered on production CUCM systems.
 
+### Bogus License Users
+
+Often when a CUCM system enters a non-compliant licensing state administrators will implement a quick "fix" by creating a dummy license user and allocating multiple devices to it. This is particularly effective for systems with CUWL licenses available as each license can support ten devices. Configuring the system in this way is breaking the conditions of the CUCM license agreement which states all devices covered by a particular license should be used by a single individual rather than multiple users. I am unaware of any cases where Cisco have audited customer systems for compliance with these terms but there is the possibility that it could happen so sticking to the rules and avoiding this bogus fix is recommended. 
