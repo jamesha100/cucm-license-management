@@ -8,7 +8,7 @@ These strategies are based upon using SQL database queries to collect and update
 
 **Note that no liability is accepted for any system damage caused as a result of following instructions in this series of articles.**
 
-## CUCM Licensing Overview
+### CUCM Licensing Overview
 
 CUCM licensing is user based with different license types supporting different device types and numbers. The available license types are listed below.
 
@@ -31,7 +31,7 @@ CUCM has the concept of borrowing licenses from higher tiers if insufficient lic
 
 For more details on CUCM licensing refer to the Cisco document [CUCM Licensing At A Glance](https://www.cisco.com/c/dam/en/us/products/collateral/unified-communications/unified-communications-licensing/C45_523902_11_9_licensing_aag_v5a_1.pdf).
 
-## License Usage
+### License Usage
 
 For CUCM licensing to work as designed when using license types that support multiple devices (UCL Enhanced Plus, CUWL Standard or CUWL Meetings) owners must be assigned to devices.
 
@@ -47,10 +47,10 @@ The *Owner* field must be set to *User* and the appropriate username selected fo
 
 If device ownership is not configured correctly then the wrong license types can be consumed. For example, if a user has a deskphone, Jabber for Windows, Jabber for iPhone and Jabber for iPad then all their devices could be covered by a single CUWL Standard license. If the ownership of these devices is not configured then four UCL Enhanced licenses would be allocated. If the CUCM system in this example only had CUWL Standard licenses available then four of this license type would be consumed - CUCM borrows from the higher tier - which is obviously inefficient in terms of license usage and cost.
 
-## Typical License Issues
+### Typical License Issues
 
 This section will detail some typical license issues encountered on production CUCM systems.
 
-### Bogus License Users
+#### Bogus License Users
 
 Often when a CUCM system enters a non-compliant licensing state administrators will implement a quick "fix" by creating a dummy license user and allocating multiple devices to it. This is particularly effective for systems with CUWL licenses available as each license can support ten devices. Configuring the system in this way is breaking the conditions of the CUCM license agreement which states all devices covered by a particular license should be used by a single individual rather than multiple users. I am unaware of any cases where Cisco have audited customer systems for compliance with these terms but there is the possibility that it could happen so sticking to the rules and avoiding this bogus fix is recommended. 
