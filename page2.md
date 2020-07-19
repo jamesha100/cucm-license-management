@@ -34,35 +34,31 @@ The key tables which will be used in this series of articles are:
 
 ### Running SQL Commands on the CUCM CLI
 
-SQL commands may be entered on the CUCM CLI by entering `run sql` followed by the SQL statement (SELECT, INSERT, UPDATE, DELETE). For example, `run sql select name,description from device` will list the name and description of all records in the device table as shown below.
+SQL commands may be entered on the CUCM CLI by entering `run sql` followed by the SQL statement (SELECT, INSERT, UPDATE, DELETE). For example, `run sql select pkid,name,description from device` will list the primary key, name and description of all records in the device table as shown below.
 
 ```
-admin:run sql select name,description from device
-name                                               description
-================================================== ============================================================
-Auto-registration Template                         #FirstName# #LastName# (#Product# #Protocol#)
-MTP_Pub                                            MTP on Publisher
-CFB_Pub                                            Software Conference Bridge on Publisher
-ANN_Pub                                            Annunciator on Publisher
-MOH_Pub                                            MOH Server on Publisher
-Sales                                              Sales
-Technical                                          Tech Hunt List
-UCCX_889301                                        Technical-1
-UCCX_889302                                        Technical-1
-UCCX_889303                                        Technical-1
-UCCX_889304                                        Technical-1
-CUPS-SIP-Trunk                                     IM and Presence
-VCS_Trunk                                          Trunk to Cisco VCS service
-PROD-CLUSTER                                       SIP Trunk to Production Cluster
-TCTJHAWKINS                                        James Hawkins Jabber for iPhone
-TABJHAWKINS                                        James Hawkins Jabber for iPad
-SEP07872776AB23                                    Extension Mobility 1
-SEPA456C561D234                                    Extension Mobility 2
-SEP0786AC561274                                    Extension Mobility 3
-JHAWKINS-UDP                                       James Hawkins Extension Mobility
-SEP389A267CBA34                                    James Hawkins DX80
+admin:run sql select pkid,name,description from device
+pkid                                 name                                               description                                               
+==================================== ================================================== ============================================================        
+6107eb89-c3e2-48c9-8c14-5b92480814dd Auto-registration Template                         #FirstName# #LastName# (#Product# #Protocol#)             
+23525453-9d43-4883-b079-0fa909dd860d MTP_Pub                                            MTP on Publisher                                          
+f662853d-ea26-4ea4-bc28-6dbf589d0b8e CFB_Pub                                            Software Conference Bridge on Publisher                   
+cb57bb48-2195-4b96-9f7d-8208f918f848 ANN_Pub                                            Annunciator on Publisher                                  
+8e5e1179-1632-4fe6-977f-2f4a2e09b2ca MOH_Pub                                            MOH Server on Publisher                                                                                  
+fdf9378d-7d70-4b28-477b-11d3e5536a28 UCCX_889301                                        Technical-1                                               
+a802f3fe-fd3e-94ec-fafb-c451f4bb8b99 UCCX_889302                                        Technical-1                                               
+2d7ad949-f76d-5155-8219-db380b027d1b UCCX_889303                                        Technical-1                                               
+332be9f4-e7a3-2836-f5a7-f813cf321162 UCCX_889304                                        Technical-1                                                                    
+d9884544-b512-affb-f32b-db9d4e861baa VCS_Trunk                                          Trunk to Cisco VCS service                                
+6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS                                        James Hawkins Jabber CSF                                                      
+5a5fbb7b-6b34-7a81-332f-e8bf39bb669d TCTJHAWKINS                                        James Hawkins Jabber for iPhone                           
+1b7d9e07-f550-ad1a-43a9-cc95e84fa928 TABJHAWKINS                                        James Hawkins Jabber for iPad                             
+459dcb10-4f80-6721-97c3-3e30280f0097 SEP07872776AB23                                    Extension Mobility 1                                      
+5ca716fd-50f5-59bd-9c35-29b4222462fb SEPA456C561D234                                    Extension Mobility 2                                      
+cbbfb41c-3a97-968d-678b-0aee016543ff SEP0786AC561274                                    Extension Mobility 3                                      
+e80c5172-a253-5814-5a07-d71e2f3e274a JHAWKINS-UDP                                       James Hawkins Extension Mobility                          
+e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34                                    James Hawkins DX80     
 ```
-
 ### Selecting Phone Device Information from the *devices* Table
 The *device* table contains records for devices other than collboration endpoints. For the purposes of configuring licensing we are not interested in any non endpoint records so we need a query that filters out non-desired results. Luckily the device table includes a field *tkclass* that can be used to implement this filtering. *tkclass* contains numerical values from the *enum* field of the *typeclass* as shown below.
 ```
@@ -339,6 +335,11 @@ SEP07872776AB23 Extension Mobility 1
 SEPA456C561D234 Extension Mobility 2
 SEP0786AC561274 Extension Mobility 3
 SEP389A267CBA34 James Hawkins DX80
+```
+In the query above we used *tkmodel* to exclude unwanted results. It can be useful to display the device model in our query so that we can see which types of devices we are dealing with. The query below does just this by using an "inner join" to pull the *name* field from the *typemodel* table.
+```
+admin:run sql select d.name as devicename, d.description,tm.name as devicemodel from device as d inner join typemodel as tm on tm.enum = d.tkmodel  where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+
 ```
 The query above lists the phone devices that consume CUCM licenses but further information is needed to view ownership information. This is stored in the *fkenduser* field in the device table. The value of *fkenduser* in the *device* table is set to the primary key value (*pkid*) of the enduser table for the user that is configured as the owner of the device. If no owner is specified the value of *fkenduser* is "NULL". The updated query below shows the fkenduser valus for the phone devices configured on the test system.
 
