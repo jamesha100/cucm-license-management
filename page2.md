@@ -60,6 +60,7 @@ SEP07872776AB23                                    Extension Mobility 1
 SEPA456C561D234                                    Extension Mobility 2
 SEP0786AC561274                                    Extension Mobility 3
 JHAWKINS-UDP                                       James Hawkins Extension Mobility
+SEP389A267CBA34                                    James Hawkins DX80
 ```
 
 ### Selecting Phone Device Information from the *devices* Table
@@ -109,6 +110,7 @@ TABJHAWKINS                                        James Hawkins Jabber for iPad
 SEP07872776AB23                                    Extension Mobility 1
 SEPA456C561D234                                    Extension Mobility 2
 SEP0786AC561274                                    Extension Mobility 3
+SEP389A267CBA34                                    James Hawkins DX80
 ```
 This list of devices is better but notice the devices with a name starting UCCX. These are CTI ports used by Cisco Contact Center Express (applications such as attendant consoles also use CTI ports). Also notice the template device.
 
@@ -336,7 +338,7 @@ TABJHAWKINS     James Hawkins Jabber for iPad
 SEP07872776AB23 Extension Mobility 1
 SEPA456C561D234 Extension Mobility 2
 SEP0786AC561274 Extension Mobility 3
-
+SEP389A267CBA34 James Hawkins DX80
 ```
 The query above lists the phone devices that consume CUCM licenses but further information is needed to view ownership information. This is stored in the *fkenduser* field in the device table. The value of *fkenduser* in the *device* table is set to the primary key value (*pkid*) of the enduser table for the user that is configured as the owner of the device. If no owner is specified the value of *fkenduser* is "NULL". The updated query below shows the fkenduser valus for the phone devices configured on the test system.
 
@@ -350,6 +352,7 @@ TABJHAWKINS     James Hawkins Jabber for iPad   NULL
 SEP07872776AB23 Extension Mobility 1            NULL
 SEPA456C561D234 Extension Mobility 2            NULL
 SEP0786AC561274 Extension Mobility 3            NULL
+SEP389A267CBA34 James Hawkins DX80              NULL
 ```
 At the time this query was run only the *CSFJHAWKINS* had an owner configured. 
 
@@ -361,4 +364,4 @@ pkid                                 userid
 ==================================== ========
 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
 ```
-
+It is possible to show the *userid* value
