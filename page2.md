@@ -59,6 +59,7 @@ cbbfb41c-3a97-968d-678b-0aee016543ff SEP0786AC561274                            
 e80c5172-a253-5814-5a07-d71e2f3e274a JHAWKINS-UDP                                       James Hawkins Extension Mobility                          
 e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34                                    James Hawkins DX80     
 ```
+Note that they primary key value is a *Globally Unique Identifier* or GUID which uniquely identifies the record.
 ### Selecting Phone Device Information from the *devices* Table
 The *device* table contains records for devices other than collboration endpoints. For the purposes of configuring licensing we are not interested in any non endpoint records so we need a query that filters out non-desired results. Luckily the device table includes a field *tkclass* that can be used to implement this filtering. *tkclass* contains numerical values from the *enum* field of the *typeclass* as shown below.
 ```
@@ -93,22 +94,23 @@ enum name
 ```
 Updating the query to only return results where the value of *tkclass* is equal to "1"  returns only "phones" (this term encompasses video conferencing devices and softphones as well as traditional hardware phones). 
 ```
-admin:run sql select name,description from device where tkclass = '1'
-name                                               description
-================================================== ============================================================
-Auto-registration Template                         #FirstName# #LastName# (#Product# #Protocol#)
-UCCX_889301                                        Technical-1
-UCCX_889302                                        Technical-1
-UCCX_889303                                        Technical-1
-UCCX_889304                                        Technical-1
-TCTJHAWKINS                                        James Hawkins Jabber for iPhone
-TABJHAWKINS                                        James Hawkins Jabber for iPad
-SEP07872776AB23                                    Extension Mobility 1
-SEPA456C561D234                                    Extension Mobility 2
-SEP0786AC561274                                    Extension Mobility 3
-SEP389A267CBA34                                    James Hawkins DX80
+admin:run sql select pkid,name,description from device where tkclass = '1'
+pkid                                 name                                           description
+==================================== ============================================== ==================================================
+1acdd19c-2c63-4191-b21f-983f27c88f18 Sample Device Template with TAG usage examples #FirstName# #LastName# (#Product# #Protocol#)
+fdf9378d-7d70-4b28-477b-11d3e5536a28 UCCX_889301                                    Technical-1
+a802f3fe-fd3e-94ec-fafb-c451f4bb8b99 UCCX_889302                                    Technical-1
+2d7ad949-f76d-5155-8219-db380b027d1b UCCX_889303                                    Technical-1
+332be9f4-e7a3-2836-f5a7-f813cf321162 UCCX_889304                                    Technical-1
+6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS                                    James Hawkins Jabber CSF
+58cfca43-5de2-969f-cd26-fc306e9dab41 SEPB4E9B0B1CE67                                ALD Test Phone
+1b7d9e07-f550-ad1a-43a9-cc95e84fa928 TABJHAWKINS                                    James Hawkins Jabber for iPad
+459dcb10-4f80-6721-97c3-3e30280f0097 SEP07872776AB23                                Extension Mobility 1
+5ca716fd-50f5-59bd-9c35-29b4222462fb SEPA456C561D234                                Extension Mobility 2
+cbbfb41c-3a97-968d-678b-0aee016543ff SEP0786AC561274                                Extension Mobility 3
+e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34                                James Hawkins DX80
 ```
-This list of devices is better but notice the devices with a name starting UCCX. These are CTI ports used by Cisco Contact Center Express (applications such as attendant consoles also use CTI ports). Also notice the template device.
+This list of devices is better but notice the devices with a name starting UCCX. These are CTI ports used by Cisco Contact Center Express (applications such as attendant consoles also use CTI ports). Also notice the template device on the first line..
 
 It is possible to filter these using the *tkmodel* field in the device table. *tkmodel* contains numerical values from the *enum* field of the *typemodel* as shown below.
 ```
@@ -323,18 +325,18 @@ enum  name
 36258 Cisco 8832
 36260 Cisco 8832NR
 ```
-Updating the query to add a filter that returns records where *tkmodel* is not equal to "72" excludes CTI ports from the returned results.
+Updating the query to add a filter that returns records where *tkmodel* is not equal to "72" or "645" excludes CTI ports and device templates from the returned results.
 ```
-admin:run sql select name,description from device where tkclass = '1' and not (tkmodel = '72' or tkmodel = '645')
-name            description
-=============== ===============================
-CSFJHAWKINS     James Hawkins Jabber CSF
-TCTJHAWKINS     James Hawkins Jabber for iPhone
-TABJHAWKINS     James Hawkins Jabber for iPad
-SEP07872776AB23 Extension Mobility 1
-SEPA456C561D234 Extension Mobility 2
-SEP0786AC561274 Extension Mobility 3
-SEP389A267CBA34 James Hawkins DX80
+admin:run sql select pkid,name,description from device where tkclass = '1' and not (tkmodel = '72' or tkmodel = '645')
+pkid                                 name            description
+==================================== =============== ===============================
+6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF
+5a5fbb7b-6b34-7a81-332f-e8bf39bb669d TCTJHAWKINS     James Hawkins Jabber for iPhone
+1b7d9e07-f550-ad1a-43a9-cc95e84fa928 TABJHAWKINS     James Hawkins Jabber for iPad
+459dcb10-4f80-6721-97c3-3e30280f0097 SEP07872776AB23 Extension Mobility 1
+5ca716fd-50f5-59bd-9c35-29b4222462fb SEPA456C561D234 Extension Mobility 2
+cbbfb41c-3a97-968d-678b-0aee016543ff SEP0786AC561274 Extension Mobility 3
+e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34 James Hawkins DX80
 ```
 In the query above we used *tkmodel* to exclude unwanted results. It can be useful to display the device model in our query so that we can see which types of devices we are dealing with. The query below does just this by using an "inner join" to pull the *name* field from the *typemodel* table.
 ```
