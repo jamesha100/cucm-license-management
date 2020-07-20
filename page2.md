@@ -340,8 +340,16 @@ e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34 James Hawkins DX80
 ```
 In the query above we used *tkmodel* to exclude unwanted results. It can be useful to display the device model in our query so that we can see which types of devices we are dealing with. The query below does just this by using an "inner join" to pull the *name* field from the *typemodel* table.
 ```
-admin:run sql select d.name as devicename, d.description,tm.name as devicemodel from device as d inner join typemodel as tm on tm.enum = d.tkmodel  where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
-
+admin:run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel from device as d inner join typemodel as tm on tm.enum = d.pkid
+pkid                                 devicename      description                     devicemodel
+==================================== =============== =============================== =======================================
+6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF        Cisco Unified Client Services Framework
+5a5fbb7b-6b34-7a81-332f-e8bf39bb669d TCTJHAWKINS     James Hawkins Jabber for iPhone Cisco Dual Mode for iPhone
+1b7d9e07-f550-ad1a-43a9-cc95e84fa928 TABJHAWKINS     James Hawkins Jabber for iPad   Cisco Jabber for Tablet
+459dcb10-4f80-6721-97c3-3e30280f0097 SEP07872776AB23 Extension Mobility 1            Cisco 7841
+5ca716fd-50f5-59bd-9c35-29b4222462fb SEPA456C561D234 Extension Mobility 2            Cisco 7841
+cbbfb41c-3a97-968d-678b-0aee016543ff SEP0786AC561274 Extension Mobility 3            Cisco 7841
+e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34 James Hawkins DX80              Cisco DX80
 ```
 The query above lists the phone devices that consume CUCM licenses but further information is needed to view ownership information. This is stored in the *fkenduser* field in the device table. The value of *fkenduser* in the *device* table is set to the primary key value (*pkid*) of the enduser table for the user that is configured as the owner of the device. If no owner is specified the value of *fkenduser* is "NULL". The updated query below shows the fkenduser valus for the phone devices configured on the test system.
 
