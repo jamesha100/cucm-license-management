@@ -386,7 +386,9 @@ Notice that only a single line is returned. This is because SQL inner joins do n
 
 ### Updating Device Ownership
 Ownership of devices can be set using the SQL *Update* command using a query in the format below.
+
 `run sql update device set fkenduser = 'pkid_of_enduser' where pkid = 'pkid_of_device'`
+
 For example, to set the owner ID of the Jabber for iPhone device in the previous query the query should below would be used.
 ```
 run sql update device set fkenduser = '8c758cf4-da8c-bd00-53be-a0902f1707e1'  where pkid = '5a5fbb7b-6b34-7a81-332f-e8bf39bb669d'
@@ -400,3 +402,15 @@ pkid                                 devicename      description                
 6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF        Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
 5a5fbb7b-6b34-7a81-332f-e8bf39bb669d TCTJHAWKINS     James Hawkins Jabber for iPhone Cisco Dual Mode for iPhone              8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
 ```
+This is ok but it would be more useful if we could somehow select the devices to be updated based upon a field that is present in the *enduser* table. The obvious candidate for this is the *telephonenumber* field which hopefully be unique for each user. The query below lists the pkid, userid and telephone number of users contained in the *enduser* table.
+```
+run sql select pkid,userid,telephonenumber from enduser order by userid
+pkid                                 userid                                          telephonenumber
+==================================== =============================================== ===============
+14986d10-028b-75c7-a032-f39f44ed6cb8 fbloggs                                         1248
+73a85b74-4323-4d63-ef5a-93e3df9a812c jdoe                                            1357
+8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins                                        1234
+```
+Using this information we can try to construct a query that will set the *fkenduser* field of all devices in the *device* table for which the Directory Number allocated to line 1  that matches the user's telephone number to the *pkid* value for that end user's entry in the *enduser* table. 
+
+Directory Numbers are stored in the *numplan* table with the number pattern held in the *dnorpattern* field. A separate table *devicenumplanmap* is used to map numbers from the *numplan* table to devices in the *device* table.
