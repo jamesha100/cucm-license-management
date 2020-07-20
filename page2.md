@@ -382,4 +382,6 @@ pkid                                 devicename      description              de
 ==================================== =============== ======================== ======================================= ==================================== ==========
 6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
 ```
-Notice that only a single line is returned. This is because SQL inner joins do not work if one of the values selected for the join is "Null".
+Notice that only a single line is returned. This is because SQL inner joins do not work if one of the values selected for the join is "NULL".
+
+### Updating Device Ownership
