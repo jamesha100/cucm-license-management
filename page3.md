@@ -1,8 +1,10 @@
-## Article 3 - Saving Device Ownership Data
+## Article 3 - Using the CUCM AXL API
 
-Cisco Unified Communications Manager 9 introduced a user based licensing model based upon user ownership of physical and software based endpoints. This model generally works well but problems can be encountered if the ownership of devices is not configured correctly. This series of articles provides an overview of licensing and strategies to ensure that licenses are used efficiently.
-These strategies are based upon using SQL database queries to collect and update device ownership. Where multiple database operations are required Python scripts will be used in conjunction with the CUCM AXL API to perform operations.
+Having created some SQL queries to read and update device ownership settings we are now ready to start to plan how to update the device ownership of all phone devices in the cluster. This will be done by using the CUCM AXL API to submit SQL requests and collect data. A rnage of tools such as [Postman](https://www.postman.com/) and [CURL](https://curl.haxx.se/) may be used to interact with the AXL API. It may also be utilised by programming languages such as [Python](https://www.python.org/).
+
 
 - [Article 1 - Introduction and CUCM Licensing Overview.](https://jamesha100.github.io/cucm-license-management/page1)
 - [Article 2 - Basic SQL Commands to Monitor and Update Licensing.](https://jamesha100.github.io/cucm-license-management/page2)
-- Article 3 - Saving Device Ownership Data.
+- Article 3 - Using the CUCM AXL API.
+
+The rest of the article will be completed at a later time.
