@@ -430,3 +430,19 @@ e64a0518-4342-5b5c-cffa-b987bc6dc1d2 94cbdcb7-5689-b4d6-ab21-3f190ab3f328 SEP389
 6eb51642-2723-8ceb-0431-6d1f70437fb8 94cbdcb7-5689-b4d6-ab21-3f190ab3f328 CSFJHAWKINS     1234        1
 1b7d9e07-f550-ad1a-43a9-cc95e84fa928 94cbdcb7-5689-b4d6-ab21-3f190ab3f328 TABJHAWKINS     1234        1
 ```
+
+The query below updates the *fkenduser* field in the *device* table with the *enduser* table value of *pkid* of the user called *jhawkins* for devices that have the Directory Number "1234".
+```
+run sql update device set fkenduser = '8c758cf4-da8c-bd00-53be-a0902f1707e1' where pkid in (select fkdevice from devicenumplanmap where fknumplan = (select pkid from numplan where dnorpattern = '1234') and numplanindex = 1) and tkclass = '1'
+Rows: 4
+```
+The updated *Rows* value of 4 matches the number of phones with the "1234" extension. Running the query below we can confirm that the owner ID has been updated as desired.
+```
+run sql select d.name as devicename, d.description,tm.name as devicemodel,d.fkenduser,eu.userid from device as d inner join typemodel as tm on tm.enum = d.tkmodel inner join enduser as eu on eu.pkid=d.fkenduser where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+devicename      description                     devicemodel                             fkenduser                            userid
+=============== =============================== ======================================= ==================================== ==========
+CSFJHAWKINS     James Hawkins Jabber CSF        Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
+TCTJHAWKINS     James Hawkins Jabber for iPhone Cisco Dual Mode for iPhone              8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
+TABJHAWKINS     James Hawkins Jabber for iPad   Cisco Jabber for Tablet                 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
+SEP389A267CBA34 James Hawkins DX80              Cisco DX80                              8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
+```
