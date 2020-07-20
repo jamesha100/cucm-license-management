@@ -51,11 +51,11 @@ If device ownership is not configured correctly then the wrong license types can
 
 This section will detail some typical license issues encountered on production CUCM systems.
 
-### Devices Not Allocated To Correct Owners
+#### Devices Not Allocated To Correct Owners
 
 TBC
 
-### Devices Not Deleted When Users Leave The Organisation
+#### Devices Not Deleted When Users Leave The Organisation
 
 TBC
 
