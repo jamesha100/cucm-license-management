@@ -5,6 +5,8 @@ These strategies are based upon using SQL database queries to collect and update
 
 - Article 1 - Introduction and CUCM Licensing Overview.
 - [Article 2 - Basic SQL Commands to Monitor and Update Licensing.](https://jamesha100.github.io/cucm-license-management/page2)
+- [Article 3 - Using the CUCM AXL API.](https://jamesha100.github.io/cucm-license-management/page3)
+- [Article 4 - Saving Existing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page4)
 
 **Note that no liability is accepted for any system damage caused as a result of following instructions in this series of articles.**
 
