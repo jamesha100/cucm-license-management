@@ -438,7 +438,8 @@ Rows: 4
 ```
 The updated *Rows* value of 4 matches the number of phones with the "1234" extension. Running the query below we can confirm that the owner ID has been updated as desired.
 ```
-run sql select d.name as devicename,tm.name as devicemodel,d.fkenduser,eu.userid from device as d inner join typemodel as tm on tm.enum = d.devicename      devicemodel                             fkenduser                            userid     or d.tkmodel = '645')
+run sql select d.name as devicename,tm.name as devicemodel,d.fkenduser,eu.userid from device as d inner join typemodel as tm on tm.enum = d.tkmodel inner join enduser as eu on eu.pkid=d.fkenduser where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+devicename      devicemodel                             fkenduser                            userid
 =============== ======================================= ==================================== ==========
 CSFJHAWKINS     Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
 TCTJHAWKINS     Cisco Dual Mode for iPhone              8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
