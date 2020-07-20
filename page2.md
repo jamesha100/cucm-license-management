@@ -414,3 +414,19 @@ pkid                                 userid                                     
 Using this information we can try to construct a query that will set the *fkenduser* field of all devices in the *device* table for which the Directory Number allocated to line 1  that matches the user's telephone number to the *pkid* value for that end user's entry in the *enduser* table. 
 
 Directory Numbers are stored in the *numplan* table with the number pattern held in the *dnorpattern* field. A separate table *devicenumplanmap* is used to map numbers from the *numplan* table to devices in the *device* table.
+
+The key fields in the *devicenumplanmap* table are:
+- **fkdevice** - the *pkid* of the device in the *device* table.
+- **fknumplan** - the *pkid* of the number in the *numplan* table.
+- **numplanindex** - contains a number corresponding to the line position on the device.
+
+The query below shows the contents of the table along with the device names and number which are pulled from the *device* and *numplan* tables using inner joins.
+```
+run sql select dnpm.fkdevice,dnpm.fknumplan,d.name,np.dnorpattern,dnpm.numplanindex from devicenumplanmap as dnpm inner join device as d on d.pkid = dnpm.fkdevice inner join numplan as np on np.pkid = dnpm.fknumplan where d.tkclass=1 order by np.dnorpattern
+fkdevice                             fknumplan                            name            dnorpattern numplanindex
+==================================== ==================================== =============== =========== ============
+e64a0518-4342-5b5c-cffa-b987bc6dc1d2 94cbdcb7-5689-b4d6-ab21-3f190ab3f328 SEP389A267CBA34 1234        1
+5a5fbb7b-6b34-7a81-332f-e8bf39bb669d 94cbdcb7-5689-b4d6-ab21-3f190ab3f328 TCTJHAWKINS     1234        1
+6eb51642-2723-8ceb-0431-6d1f70437fb8 94cbdcb7-5689-b4d6-ab21-3f190ab3f328 CSFJHAWKINS     1234        1
+1b7d9e07-f550-ad1a-43a9-cc95e84fa928 94cbdcb7-5689-b4d6-ab21-3f190ab3f328 TABJHAWKINS     1234        1
+```
