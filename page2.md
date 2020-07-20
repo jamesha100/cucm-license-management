@@ -37,7 +37,7 @@ The key tables which will be used in this series of articles are:
 SQL commands may be entered on the CUCM CLI by entering `run sql` followed by the SQL statement (SELECT, INSERT, UPDATE, DELETE). For example, `run sql select pkid,name,description from device` will list the primary key, name and description of all records in the device table as shown below.
 
 ```
-admin:run sql select pkid,name,description from device
+run sql select pkid,name,description from device
 pkid                                 name                                               description                                               
 ==================================== ================================================== ============================================================        
 6107eb89-c3e2-48c9-8c14-5b92480814dd Auto-registration Template                         #FirstName# #LastName# (#Product# #Protocol#)             
@@ -63,7 +63,7 @@ Note that they primary key value is a *Globally Unique Identifier* or GUID which
 ### Selecting Phone Device Information from the *devices* Table
 The *device* table contains records for devices other than collboration endpoints. For the purposes of configuring licensing we are not interested in any non endpoint records so we need a query that filters out non-desired results. Luckily the device table includes a field *tkclass* that can be used to implement this filtering. *tkclass* contains numerical values from the *enum* field of the *typeclass* as shown below.
 ```
-admin:run sql select enum,name from typeclass
+run sql select enum,name from typeclass
 enum name
 ==== ===================================
 1    Phone
@@ -94,7 +94,7 @@ enum name
 ```
 Updating the query to only return results where the value of *tkclass* is equal to "1"  returns only "phones" (this term encompasses video conferencing devices and softphones as well as traditional hardware phones). 
 ```
-admin:run sql select pkid,name,description from device where tkclass = '1'
+run sql select pkid,name,description from device where tkclass = '1'
 pkid                                 name                                           description
 ==================================== ============================================== ==================================================
 1acdd19c-2c63-4191-b21f-983f27c88f18 Sample Device Template with TAG usage examples #FirstName# #LastName# (#Product# #Protocol#)
@@ -114,7 +114,7 @@ This list of devices is better but notice the devices with a name starting UCCX.
 
 It is possible to filter these using the *tkmodel* field in the device table. *tkmodel* contains numerical values from the *enum* field of the *typemodel* as shown below.
 ```
-admin:run sql select enum,name from typemodel order by enum
+run sql select enum,name from typemodel order by enum
 enum  name
 ===== ==================================================
 1     Cisco 30 SP+
@@ -327,7 +327,7 @@ enum  name
 ```
 Updating the query to add a filter that returns records where *tkmodel* is not equal to "72" or "645" excludes CTI ports and device templates from the returned results.
 ```
-admin:run sql select pkid,name,description from device where tkclass = '1' and not (tkmodel = '72' or tkmodel = '645')
+run sql select pkid,name,description from device where tkclass = '1' and not (tkmodel = '72' or tkmodel = '645')
 pkid                                 name            description
 ==================================== =============== ===============================
 6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF
@@ -340,7 +340,7 @@ e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34 James Hawkins DX80
 ```
 In the query above we used *tkmodel* to exclude unwanted results. It can be useful to display the device model in our query so that we can see which types of devices we are dealing with. The query below does just this by using an "inner join" to pull the *name* field from the *typemodel* table.
 ```
-admin:run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel from device as d inner join typemodel as tm on tm.enum = d.tkmodel where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel from device as d inner join typemodel as tm on tm.enum = d.tkmodel where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
 
 pkid                                 devicename      description                     devicemodel
 ==================================== =============== =============================== =======================================
@@ -354,7 +354,7 @@ e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34 James Hawkins DX80         
 ```
 The query above lists the phone devices that consume CUCM licenses but further information is needed to view ownership information. This is stored in the *fkenduser* field in the device table. The value of *fkenduser* in the *device* table is set to the primary key value (*pkid*) of the enduser table for the user that is configured as the owner of the device. If no owner is specified the value of *fkenduser* is "NULL". The updated query below shows the fkenduser values for the phone devices configured on the test system.
 ```
-admin:run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel,d.fkenduser from device as d inner join typemodel as tm on tm.enum = d.tkmodel where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel,d.fkenduser from device as d inner join typemodel as tm on tm.enum = d.tkmodel where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
 pkid                                 devicename      description                     devicemodel                             fkenduser            
 ==================================== =============== =============================== ======================================= ====================================
 6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF        Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1
@@ -377,7 +377,7 @@ pkid                                 userid
 ```
 It is possible to show the *userid* value in the device query shown above by adding an inner join to the *enduser* table as shown in the query below.
 ```
-admin:run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel,d.fkenduser,eu.userid from device as d inner join typemodel as tm on tm.enum = d.tkmodel inner join enduser as eu on eu.pkid=d.fkenduser where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel,d.fkenduser,eu.userid from device as d inner join typemodel as tm on tm.enum = d.tkmodel inner join enduser as eu on eu.pkid=d.fkenduser where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
 pkid                                 devicename      description              devicemodel                             fkenduser                            userid
 ==================================== =============== ======================== ======================================= ==================================== ==========
 6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
@@ -385,3 +385,18 @@ pkid                                 devicename      description              de
 Notice that only a single line is returned. This is because SQL inner joins do not work if one of the values selected for the join is "NULL".
 
 ### Updating Device Ownership
+Ownership of devices can be set using the SQL *Update* command using a query in the format below.
+`run sql update device set fkenduser = 'pkid_of_enduser' where pkid = 'pkid_of_device'`
+For example, to set the owner ID of the Jabber for iPhone device in the previous query the query should below would be used.
+```
+run sql update device set fkenduser = '8c758cf4-da8c-bd00-53be-a0902f1707e1'  where pkid = '5a5fbb7b-6b34-7a81-332f-e8bf39bb669d'
+Rows: 1
+```
+The "Rows: 1" response indicates that one record has been updated. If we now run our device query we can see that "jhawkins" is now configured as the owner of the device "TCTJHAWKINS".
+```
+run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel,d.fkenduser,eu.userid from device as d inner join typemodel as tm on tm.enum = d.tkmodel inner join enduser as eu on eu.pkid=d.fkenduser where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+pkid                                 devicename      description                     devicemodel                             fkenduser                            userid
+==================================== =============== =============================== ======================================= ==================================== ==========
+6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF        Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
+5a5fbb7b-6b34-7a81-332f-e8bf39bb669d TCTJHAWKINS     James Hawkins Jabber for iPhone Cisco Dual Mode for iPhone              8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
+```
