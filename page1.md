@@ -51,6 +51,14 @@ If device ownership is not configured correctly then the wrong license types can
 
 This section will detail some typical license issues encountered on production CUCM systems.
 
+### Devices Not Allocated To Correct Owners
+
+TBC
+
+### Devices Not Deleted When Users Leave The Organisation
+
+TBC
+
 #### Bogus License Users
 
 Often when a CUCM system enters a non-compliant licensing state administrators will implement a quick "fix" by creating a dummy license user and allocating multiple devices to it. This is particularly effective for systems with CUWL licenses available as each license can support ten devices. Configuring the system in this way is breaking the conditions of the CUCM license agreement which states all devices covered by a particular license should be used by a single individual rather than multiple users. I am unaware of any cases where Cisco have audited customer systems for compliance with these terms but there is the possibility that it could happen so sticking to the rules and avoiding this bogus fix is recommended. 
