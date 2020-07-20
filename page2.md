@@ -367,7 +367,7 @@ e64a0518-4342-5b5c-cffa-b987bc6dc1d2 SEP389A267CBA34 James Hawkins DX80         
 ```
 At the time this query was run only the *CSFJHAWKINS* had an owner configured. 
 
-The *fkenduser* value in in the form of a database *Globally Unique Identifier* or GUID. This is a unique sixteen bit value which is used as the primary key for the database table. Obviously the GUID is not meaningful to humans - the query below shows that the userid *jhawkins* is associated with the fkenduser GUID value from the previous query.
+The *fkenduser* value in in the form of a database *Globally Unique Identifier* or GUID. This is a unique sixteen bit value which is used as the primary key for the database table. Obviously the GUID is not meaningful to humans - the query on the *enduser* table below shows that the userid *jhawkins* is associated with the fkenduser GUID value from the previous query.
 
 ```
 admin:run sql select pkid,userid from enduser where pkid = '8c758cf4-da8c-bd00-53be-a0902f1707e1'
@@ -375,4 +375,11 @@ pkid                                 userid
 ==================================== ========
 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
 ```
-It is possible to show the *userid* value
+It is possible to show the *userid* value in the device query shown above by adding an inner join to the *enduser* table as shown in the query below.
+```
+admin:run sql select d.pkid,d.name as devicename, d.description,tm.name as devicemodel,d.fkenduser,eu.userid from device as d inner join typemodel as tm on tm.enum = d.tkmodel inner join enduser as eu on eu.pkid=d.fkenduser where d.tkclass = '1' and not (d.tkmodel = '72' or d.tkmodel = '645')
+pkid                                 devicename      description              devicemodel                             fkenduser                            userid
+==================================== =============== ======================== ======================================= ==================================== ==========
+6eb51642-2723-8ceb-0431-6d1f70437fb8 CSFJHAWKINS     James Hawkins Jabber CSF Cisco Unified Client Services Framework 8c758cf4-da8c-bd00-53be-a0902f1707e1 jhawkins
+```
+Notice that only a single line is returned. This is because SQL inner joins do not work if one of the values selected for the join is "Null".
