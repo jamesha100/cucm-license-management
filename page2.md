@@ -6,6 +6,8 @@ This article provides an overview of using the CLI to execute commands with a sp
 
 - [Article 1 - Introduction and CUCM Licensing Overview.](https://jamesha100.github.io/cucm-license-management/page1)
 - Article 2 - Basic SQL Commands to Monitor and Update Licensing.
+- [Article 3 - Using the CUCM AXL API.](https://jamesha100.github.io/cucm-license-management/page3)
+- [Article 4 - Saving Existing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page4)
 
 ### Accessing the CUCM CLI
 
