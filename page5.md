@@ -24,13 +24,14 @@ The Python script shown below will retrieve the data listed above and save it to
 The script comprises the following high level steps:
 
 1. Load information needed to connect to the target CUCM server from an ini file. 
-2. Connect to the CUCM AXL API using the settings from the ini file to retrieve and store cookies data. 
-3. Connect to the CUCM AXL API, execute the SQL query detailed above. This will return an XML document containing the required data.
-4. Extract the data from the XML document to an ordered dictionary.
-5. Loop through the dictionary to extract the data from the dictionary and store in a list of lists.
-6. Create the filename for the CSV file which includes the date and time of file creation.
-7. Write header values to the CSV file first line.
-8. Loop through the list of lists and write data for each individual device to a new line in the CSV file.
+2. Ask the user to enter the name of the CSV file that contains the device ownership data to be restored.
+3. Connect to the CUCM AXL API using the settings from the ini file to retrieve and store cookies data. 
+4. Connect to the CUCM AXL API, execute the SQL query detailed above. This will return an XML document containing the required data.
+5. Extract the data from the XML document to an ordered dictionary.
+6. Loop through the dictionary to extract the data from the dictionary and store in a list of lists.
+7. Create the filename for the CSV file which includes the date and time of file creation.
+8. Write header values to the CSV file first line.
+9. Loop through the list of lists and write data for each individual device to a new line in the CSV file.
 
 ```
 import sys
