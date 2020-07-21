@@ -27,3 +27,144 @@ Devices that do not have owners assigned (the fkenduser filed is set to NULL) wi
 
 ### The Python Script
 
+```
+import sys
+import requests
+from urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
+from configparser import ConfigParser
+import datetime
+import pprint
+import xmltodict
+import csv
+
+disable_warnings(InsecureRequestWarning)
+
+
+########################################################################################################################
+
+def axlgetcookies(serveraddress, version, axluser, axlpassword):
+    try:
+        # Make AXL query using Requests module
+        axlgetcookiessoapresponse = requests.get('https://' + ipaddr + ':8443/axl/', headers=soapheaders, verify=False,\
+                                                 auth=(axluser, axlpassword), timeout=3)
+        print(axlgetcookiessoapresponse)
+        getaxlcookiesresult = axlgetcookiessoapresponse.cookies
+
+        if '200' in str(axlgetcookiessoapresponse):
+            # request is successful
+            print('AXL Request Successful')
+        elif '401' in str(axlgetcookiessoapresponse):
+            # request fails due to invalid credentials
+            print('Response is 401 Unauthorised - please check credentials')
+        else:
+            # request fails due to other cause
+            print('Request failed! - HTTP Response Code is ' + axlgetcookiessoapresponse)
+
+    except requests.exceptions.Timeout:
+        axlgetcookiesresult = 'Error: IP address not found!'
+
+    except requests.exceptions.ConnectionError:
+        axlgetcookiesresult = 'Error: DNS lookup failed!'
+
+    return getaxlcookiesresult
+
+
+########################################################################################################################
+
+def axlgetdeviceownerdata(cookies):
+    # Set SOAP request body
+    axlgetdeviceownerdatasoaprequest = '<?xml version="1.0" encoding="UTF-8"?>\
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\
+     xmlns:ns="http://www.cisco.com/AXL/API/' + version + '"><soapenv:Header/><soapenv:Body><ns:executeSQLQuery><sql>\
+     SELECT d.pkid,d.name AS devicename, d.description,tm.name AS devicemodel,d.fkenduser,eu.userid FROM device AS d\
+      INNER JOIN typemodel AS tm ON tm.enum = d.tkmodel INNER JOIN enduser AS eu ON eu.pkid=d.fkenduser WHERE d.tkclass\
+       = \'1\' AND NOT (d.tkmodel = \'72\' OR d.tkmodel = \'645\')</sql></ns:executeSQLQuery></soapenv:Body>\
+       </soapenv:Envelope>'
+
+    try:
+
+        # Make SOAP request
+        axlgetdeviceownerdatasoapresponse = requests.post('https://' + ipaddr + ':8443/axl/',\
+                                                          data=axlgetdeviceownerdatasoaprequest, headers=soapheaders,\
+                                                          verify=False, cookies=cookies, timeout=3)
+        # Parse SOAP XML response to a dictionary
+        axlgetdeviceownerdatasoapresponse_dict = xmltodict.parse(axlgetdeviceownerdatasoapresponse.text)
+        # Remove unwanted parts of the dictionary to leave the data we require
+        axlgetdeviceownerdatasoapresponse_subdict = \
+            axlgetdeviceownerdatasoapresponse_dict['soapenv:Envelope']['soapenv:Body']['ns:executeSQLQueryResponse']\
+                ['return']['row']
+        pprint.pprint(axlgetdeviceownerdatasoapresponse_subdict)
+
+        axlgetdeviceownerdatasoapresponse_list = []
+
+        for item in axlgetdeviceownerdatasoapresponse_subdict:
+            devicerecord = []
+            devicerecord.append(item['pkid'])
+            devicerecord.append(item['devicename'])
+            devicerecord.append(item['description'])
+            devicerecord.append(item['devicemodel'])
+            devicerecord.append(item['fkenduser'])
+            devicerecord.append(item['userid'])
+            axlgetdeviceownerdatasoapresponse_list.append(devicerecord)
+
+        return axlgetdeviceownerdatasoapresponse_list
+
+    except requests.exceptions.Timeout:
+        print('IP address not found! ')
+    except requests.exceptions.ConnectionError:
+        print('DNS lookup failed!  ')
+
+
+########################################################################################################################
+
+def main():
+    # Import values for the CUCM environment from ini file using ConfigParser
+
+    global ipaddr, version, axluser, axlpassword, soapheaders, cookies
+    parser = ConfigParser()
+    parser.read('cucm-settings.ini')
+
+    ipaddr = parser.get('CUCM', 'ipaddr')
+    version = parser.get('CUCM', 'version')
+    axluser = parser.get('CUCM', 'axluser')
+    axlpassword = parser.get('CUCM', 'axlpassword')
+    soapheaders = {'Content-type': 'text/xml', 'SOAPAction': 'CUCM:DB ver=' + version}
+
+    # Get cookies for future AXL requests
+    axlgetcookiesresult = axlgetcookies(ipaddr, version, axluser, axlpassword)
+    print(axlgetcookiesresult)
+
+    if 'JSESSIONIDSSO' in str(axlgetcookiesresult):
+        print('Cookies Retrieved')
+
+    else:
+        sys.exit('Program has ended due to error!')
+
+    # Get Device Ownership Data
+
+    deviceownerdata_list = axlgetdeviceownerdata(axlgetcookiesresult)
+    print(deviceownerdata_list)
+
+    # Create filename for output file in format deviceownerdata-year-month-dom-hour-minute-second.csv
+
+    now = datetime.datetime.now()
+    outputfile = 'deviceownerdata-' + now.strftime("%Y-%m-%d-%H-%M-%S") + '.csv'
+    print(outputfile)
+
+    # Write device ownership data to csv file
+    deviceownerdataoutputfile = open(outputfile, 'w', newline='')
+    deviceownerdataoutputwriter = csv.writer(deviceownerdataoutputfile)
+    deviceownerdataoutputwriter.writerow(
+        ['devicepkid', 'devicename', 'description', 'devicemodel', 'fkenduser', 'userid'])
+    for item in deviceownerdata_list:
+        deviceownerdataoutputwriter.writerow(item)
+
+    deviceownerdataoutputfile.close()
+
+
+########################################################################################################################
+
+if __name__ == "__main__":
+    main()
+```
