@@ -172,9 +172,15 @@ def main():
 
     deviceownerdataoutputfile.close()
 
-
 ########################################################################################################################
 
 if __name__ == "__main__":
     main()
 ```
+#### The Output Data
+The csv file output should look similar to that shown below - thanks to [Donat Studios](https://donatstudios.com/CsvToMarkdownTable) for providing a tool to convert CSV data to Markdown.
+
+| devicepkid                           | devicename  | description                     | devicemodel                             | fkenduser                            | userid   | 
+|--------------------------------------|-------------|---------------------------------|-----------------------------------------|--------------------------------------|----------| 
+| 6eb51642-2723-8ceb-0431-6d1f70437fb8 | CSFJHAWKINS | James Hawkins Jabber CSF        | Cisco Unified Client Services Framework | 8c758cf4-da8c-bd00-53be-a0902f1707e1 | jhawkins | 
+| 5a5fbb7b-6b34-7a81-332f-e8bf39bb669d | TCTJHAWKINS | James Hawkins Jabber for iPhone | Cisco Dual Mode for iPhone              | 8c758cf4-da8c-bd00-53be-a0902f1707e1 | jhawkins | 
