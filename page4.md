@@ -26,6 +26,18 @@ This query will retrieve the following data for any phone device that has an own
 Devices that do not have owners assigned (the fkenduser filed is set to NULL) will not be returned in the query. In reality only the device pkid and device owner values are needed to restore ownership settings. The other fields are collected to make the data readable by humans.
 
 ### The Python Script
+The Python script shown below will retrieve the data listed above and save it to a CSV file. The name of the CSV file includes date and time information so that new output files can be created without overwriting existing files.
+
+The script comprises the following high level steps:
+
+1. Load information needed to connect to the target CUCM server from an ini file. 
+2. Connect to the CUCM AXL API using the settings from the ini file to retrieve and store cookies data. (this step is not strictly necessary as the script only makes one other connection to the AXL API. It is used for consistency with the other Python scripts used in this series of articles.
+3. Connect to the CUCM AXL API, execute the SQL query detailed above. This will return an XML document containing the required data.
+4. Extract the data from the XML document to an ordered dictionary.
+5. Loop through the dictionary to extract the data from the dictionary and store in a list of lists.
+6. Create the filename for the CSV file which includes the date and time of file creation.
+7. Write header values to the CSV file first line.
+8. Loop through the list of lists and write data for each individual device to a new line in the CSV file.
 
 ```
 import sys
@@ -39,7 +51,6 @@ import xmltodict
 import csv
 
 disable_warnings(InsecureRequestWarning)
-
 
 ########################################################################################################################
 
@@ -68,7 +79,6 @@ def axlgetcookies(serveraddress, version, axluser, axlpassword):
         axlgetcookiesresult = 'Error: DNS lookup failed!'
 
     return getaxlcookiesresult
-
 
 ########################################################################################################################
 
