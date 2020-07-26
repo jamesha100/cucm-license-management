@@ -52,12 +52,13 @@ import csv
 
 disable_warnings(InsecureRequestWarning)
 
+
 ########################################################################################################################
 
 def axlgetcookies(serveraddress, version, axluser, axlpassword):
     try:
         # Make AXL query using Requests module
-        axlgetcookiessoapresponse = requests.get('https://' + ipaddr + ':8443/axl/', headers=soapheaders, verify=False,\
+        axlgetcookiessoapresponse = requests.get(f'https://{ipaddr}:8443/axl/', headers=soapheaders, verify=False,\
                                                  auth=(axluser, axlpassword), timeout=3)
         print(axlgetcookiessoapresponse)
         getaxlcookiesresult = axlgetcookiessoapresponse.cookies
@@ -70,7 +71,7 @@ def axlgetcookies(serveraddress, version, axluser, axlpassword):
             print('Response is 401 Unauthorised - please check credentials')
         else:
             # request fails due to other cause
-            print('Request failed! - HTTP Response Code is ' + axlgetcookiessoapresponse)
+            print(f'Request failed! - HTTP Response Code is {axlgetcookiessoapresponse}')
 
     except requests.exceptions.Timeout:
         axlgetcookiesresult = 'Error: IP address not found!'
@@ -80,13 +81,14 @@ def axlgetcookies(serveraddress, version, axluser, axlpassword):
 
     return getaxlcookiesresult
 
+
 ########################################################################################################################
 
 def axlgetdeviceownerdata(cookies):
     # Set SOAP request body
-    axlgetdeviceownerdatasoaprequest = '<?xml version="1.0" encoding="UTF-8"?>\
+    axlgetdeviceownerdatasoaprequest = f'<?xml version="1.0" encoding="UTF-8"?>\
     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\
-     xmlns:ns="http://www.cisco.com/AXL/API/' + version + '"><soapenv:Header/><soapenv:Body><ns:executeSQLQuery><sql>\
+     xmlns:ns="http://www.cisco.com/AXL/API/{version}"><soapenv:Header/><soapenv:Body><ns:executeSQLQuery><sql>\
      SELECT d.pkid,d.name AS devicename, d.description,tm.name AS devicemodel,d.fkenduser,eu.userid FROM device AS d\
       INNER JOIN typemodel AS tm ON tm.enum = d.tkmodel INNER JOIN enduser AS eu ON eu.pkid=d.fkenduser WHERE d.tkclass\
        = \'1\' AND NOT (d.tkmodel = \'72\' OR d.tkmodel = \'645\')</sql></ns:executeSQLQuery></soapenv:Body>\
@@ -95,7 +97,7 @@ def axlgetdeviceownerdata(cookies):
     try:
 
         # Make SOAP request
-        axlgetdeviceownerdatasoapresponse = requests.post('https://' + ipaddr + ':8443/axl/',\
+        axlgetdeviceownerdatasoapresponse = requests.post(f'https://{ipaddr}:8443/axl/',\
                                                           data=axlgetdeviceownerdatasoaprequest, headers=soapheaders,\
                                                           verify=False, cookies=cookies, timeout=3)
         # Parse SOAP XML response to a dictionary
@@ -139,7 +141,7 @@ def main():
     version = parser.get('CUCM', 'version')
     axluser = parser.get('CUCM', 'axluser')
     axlpassword = parser.get('CUCM', 'axlpassword')
-    soapheaders = {'Content-type': 'text/xml', 'SOAPAction': 'CUCM:DB ver=' + version}
+    soapheaders = {'Content-type': 'text/xml', 'SOAPAction': f'CUCM:DB ver={version}'}
 
     # Get cookies for future AXL requests
     axlgetcookiesresult = axlgetcookies(ipaddr, version, axluser, axlpassword)
@@ -171,6 +173,7 @@ def main():
         deviceownerdataoutputwriter.writerow(item)
 
     deviceownerdataoutputfile.close()
+
 
 ########################################################################################################################
 
