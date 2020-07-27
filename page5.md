@@ -81,7 +81,7 @@ def axlupdatedeviceownerdata(cookies,devicepkid,fkenduser):
     try:
 
         # Make SOAP request
-        axlupdatedeviceownerdatasoapresponse = requests.post('https://' + ipaddr + ':8443/axl/', data=axlupdatedeviceownerdatasoaprequest, headers=soapheaders, verify=False, cookies=cookies, timeout=9)
+        axlupdatedeviceownerdatasoapresponse = requests.post(f'https://{ipaddr}:8443/axl/', data=axlupdatedeviceownerdatasoaprequest, headers=soapheaders, verify=False, cookies=cookies, timeout=9)
 
         if '200' in str(axlupdatedeviceownerdatasoapresponse):
             # request is successful
