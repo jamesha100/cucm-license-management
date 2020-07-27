@@ -15,7 +15,7 @@ To do this we will use a Python script to submit SQL update queries to the CUCM 
 
 The SQL query we will use to clear the device owner data is shown below.
 ```
-run sql update device set fkenduser = NULL where pkid = 'value_of_pkid_read_from_csv_file'
+run sql UPDATE device SET fkenduser = NULL  WHERE tkclass = "1" AND NOT (tkmodel = "72" OR tkmodel = "645")
 ```
 This query will just once as there *where* conditions will match all user type phones.
 
@@ -28,7 +28,107 @@ The script comprises the following high level steps:
 2. Connect to the CUCM AXL API using the settings from the and set *fkenduser* value to NULL for all user type phones (not CTI ports or BAT template devices).
 
 ```
+import sys
+import requests
+from urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
+from configparser import ConfigParser
+import datetime
+import pprint
 
+
+disable_warnings(InsecureRequestWarning)
+
+
+########################################################################################################################
+
+def axlgetcookies(serveraddress, version, axluser, axlpassword):
+    try:
+        # Make AXL query using Requests module
+        axlgetcookiessoapresponse = requests.get(f'https://{ipaddr}:8443/axl/', headers=soapheaders, verify=False,\
+                                                 auth=(axluser, axlpassword), timeout=3)
+        print(axlgetcookiessoapresponse)
+        getaxlcookiesresult = axlgetcookiessoapresponse.cookies
+
+        if '200' in str(axlgetcookiessoapresponse):
+            # request is successful
+            print('AXL Request Successful')
+        elif '401' in str(axlgetcookiessoapresponse):
+            # request fails due to invalid credentials
+            print('Response is 401 Unauthorised - please check credentials')
+        else:
+            # request fails due to other cause
+            print(f'Request failed! - HTTP Response Code is {axlgetcookiessoapresponse}')
+
+    except requests.exceptions.Timeout:
+        axlgetcookiesresult = 'Error: IP address not found!'
+
+    except requests.exceptions.ConnectionError:
+        axlgetcookiesresult = 'Error: DNS lookup failed!'
+
+    return getaxlcookiesresult
+
+########################################################################################################################
+
+def axlcleardeviceownerdata(cookies):
+    # Set SOAP request body
+
+    axlcleardeviceownerdatasoaprequest = f'<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/{version}"><soapenv:Header/><soapenv:Body><ns:executeSQLUpdate><sql>UPDATE device SET fkenduser = NULL  WHERE tkclass = "1" AND NOT (tkmodel = "72" OR tkmodel = "645")</sql></ns:executeSQLUpdate></soapenv:Body></soapenv:Envelope>'
+
+    try:
+
+        # Make SOAP request
+        axlcleardeviceownerdatasoapresponse = requests.post(f'https://{ipaddr}:8443/axl/', data=axlcleardeviceownerdatasoaprequest, headers=soapheaders, verify=False, cookies=cookies, timeout=9)
+
+        if '200' in str(axlcleardeviceownerdatasoapresponse):
+            # request is successful
+            device_update = 'Success'
+        else:
+            # request is unsuccessful
+            device_update = 'Failure'
+
+        return device_update
+
+    except requests.exceptions.Timeout:
+        print('IP address not found! ')
+    except requests.exceptions.ConnectionError:
+        print('DNS lookup failed!  ')
+
+
+########################################################################################################################
+
+def main():
+    # Import values for the CUCM environment from ini file using ConfigParser
+
+    global ipaddr, version, axluser, axlpassword, soapheaders, cookies
+    parser = ConfigParser()
+    parser.read('cucm-settings.ini')
+
+    ipaddr = parser.get('CUCM', 'ipaddr')
+    version = parser.get('CUCM', 'version')
+    axluser = parser.get('CUCM', 'axluser')
+    axlpassword = parser.get('CUCM', 'axlpassword')
+    soapheaders = {'Content-type': 'text/xml', 'SOAPAction': 'CUCM:DB ver=' + version}
+
+    # Get cookies for future AXL requests
+    axlgetcookiesresult = axlgetcookies(ipaddr, version, axluser, axlpassword)
+    print(axlgetcookiesresult)
+
+    if 'JSESSIONIDSSO' in str(axlgetcookiesresult):
+        print('Cookies Retrieved')
+
+    else:
+        sys.exit('Program has ended due to error!')
+
+    # Clear device ownership by setting fkenduser to NULL
+    result = axlcleardeviceownerdata(axlgetcookiesresult)
+    print(result)
+
+
+########################################################################################################################
+
+if __name__ == "__main__":
+    main()
 ```
 
 
