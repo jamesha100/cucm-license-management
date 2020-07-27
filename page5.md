@@ -76,8 +76,6 @@ def axlgetcookies(serveraddress, version, axluser, axlpassword):
 
 def axlupdatedeviceownerdata(cookies,devicepkid,fkenduser):
     # Set SOAP request body
-    # axlupdatedeviceownerdatasoaprequest = '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/' + version + '"><soapenv:Header/><soapenv:Body><ns:executeSQLUpdate><sql>UPDATE device SET fkenduser = "' + fkenduser + '" WHERE pkid = "' + devicepkid + '"</sql></ns:executeSQLUpdate></soapenv:Body></soapenv:Envelope>'
-
     axlupdatedeviceownerdatasoaprequest = f'<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/{version}"><soapenv:Header/><soapenv:Body><ns:executeSQLUpdate><sql>UPDATE device SET fkenduser = "{fkenduser}" WHERE pkid = "{devicepkid}"</sql></ns:executeSQLUpdate></soapenv:Body></soapenv:Envelope>'
 
     try:
