@@ -26,12 +26,9 @@ The script comprises the following high level steps:
 1. Load information needed to connect to the target CUCM server from an ini file. 
 2. Ask the user to enter the name of the CSV file that contains the device ownership data to be restored.
 3. Connect to the CUCM AXL API using the settings from the ini file to retrieve and store cookies data. 
-4. Connect to the CUCM AXL API, execute the SQL query detailed above. This will return an XML document containing the required data.
-5. Extract the data from the XML document to an ordered dictionary.
-6. Loop through the dictionary to extract the data from the dictionary and store in a list of lists.
-7. Create the filename for the CSV file which includes the date and time of file creation.
-8. Write header values to the CSV file first line.
-9. Loop through the list of lists and write data for each individual device to a new line in the CSV file.
+4. Open the input CSV file and loop through data.
+5. For each line try to update the device owner using an AXL SQL Update query the *fkenduser* and *devicepkid* values for that line.
+6. The result of each SQL Update query is written to a CSV log file along with the device and owner details.
 
 ```
 import sys
@@ -41,17 +38,18 @@ from urllib3.exceptions import InsecureRequestWarning
 from configparser import ConfigParser
 import datetime
 import pprint
-import xmltodict
 import csv
+from csv import DictReader
 
 disable_warnings(InsecureRequestWarning)
+
 
 ########################################################################################################################
 
 def axlgetcookies(serveraddress, version, axluser, axlpassword):
     try:
         # Make AXL query using Requests module
-        axlgetcookiessoapresponse = requests.get('https://' + ipaddr + ':8443/axl/', headers=soapheaders, verify=False,\
+        axlgetcookiessoapresponse = requests.get(f'https://{ipaddr}:8443/axl/', headers=soapheaders, verify=False,\
                                                  auth=(axluser, axlpassword), timeout=3)
         print(axlgetcookiessoapresponse)
         getaxlcookiesresult = axlgetcookiessoapresponse.cookies
@@ -76,43 +74,25 @@ def axlgetcookies(serveraddress, version, axluser, axlpassword):
 
 ########################################################################################################################
 
-def axlgetdeviceownerdata(cookies):
+def axlupdatedeviceownerdata(cookies,devicepkid,fkenduser):
     # Set SOAP request body
-    axlgetdeviceownerdatasoaprequest = '<?xml version="1.0" encoding="UTF-8"?>\
-    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\
-     xmlns:ns="http://www.cisco.com/AXL/API/' + version + '"><soapenv:Header/><soapenv:Body><ns:executeSQLQuery><sql>\
-     SELECT d.pkid,d.name AS devicename, d.description,tm.name AS devicemodel,d.fkenduser,eu.userid FROM device AS d\
-      INNER JOIN typemodel AS tm ON tm.enum = d.tkmodel INNER JOIN enduser AS eu ON eu.pkid=d.fkenduser WHERE d.tkclass\
-       = \'1\' AND NOT (d.tkmodel = \'72\' OR d.tkmodel = \'645\')</sql></ns:executeSQLQuery></soapenv:Body>\
-       </soapenv:Envelope>'
+    # axlupdatedeviceownerdatasoaprequest = '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/' + version + '"><soapenv:Header/><soapenv:Body><ns:executeSQLUpdate><sql>UPDATE device SET fkenduser = "' + fkenduser + '" WHERE pkid = "' + devicepkid + '"</sql></ns:executeSQLUpdate></soapenv:Body></soapenv:Envelope>'
+
+    axlupdatedeviceownerdatasoaprequest = f'<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/{version}"><soapenv:Header/><soapenv:Body><ns:executeSQLUpdate><sql>UPDATE device SET fkenduser = "{fkenduser}" WHERE pkid = "{devicepkid}"</sql></ns:executeSQLUpdate></soapenv:Body></soapenv:Envelope>'
 
     try:
 
         # Make SOAP request
-        axlgetdeviceownerdatasoapresponse = requests.post('https://' + ipaddr + ':8443/axl/',\
-                                                          data=axlgetdeviceownerdatasoaprequest, headers=soapheaders,\
-                                                          verify=False, cookies=cookies, timeout=3)
-        # Parse SOAP XML response to a dictionary
-        axlgetdeviceownerdatasoapresponse_dict = xmltodict.parse(axlgetdeviceownerdatasoapresponse.text)
-        # Remove unwanted parts of the dictionary to leave the data we require
-        axlgetdeviceownerdatasoapresponse_subdict = \
-            axlgetdeviceownerdatasoapresponse_dict['soapenv:Envelope']['soapenv:Body']['ns:executeSQLQueryResponse']\
-                ['return']['row']
-        pprint.pprint(axlgetdeviceownerdatasoapresponse_subdict)
+        axlupdatedeviceownerdatasoapresponse = requests.post('https://' + ipaddr + ':8443/axl/', data=axlupdatedeviceownerdatasoaprequest, headers=soapheaders, verify=False, cookies=cookies, timeout=9)
 
-        axlgetdeviceownerdatasoapresponse_list = []
+        if '200' in str(axlupdatedeviceownerdatasoapresponse):
+            # request is successful
+            device_update = 'Success'
+        else:
+            # request is unsuccessful
+            device_update = 'Failure'
 
-        for item in axlgetdeviceownerdatasoapresponse_subdict:
-            devicerecord = []
-            devicerecord.append(item['pkid'])
-            devicerecord.append(item['devicename'])
-            devicerecord.append(item['description'])
-            devicerecord.append(item['devicemodel'])
-            devicerecord.append(item['fkenduser'])
-            devicerecord.append(item['userid'])
-            axlgetdeviceownerdatasoapresponse_list.append(devicerecord)
-
-        return axlgetdeviceownerdatasoapresponse_list
+        return device_update
 
     except requests.exceptions.Timeout:
         print('IP address not found! ')
@@ -135,6 +115,17 @@ def main():
     axlpassword = parser.get('CUCM', 'axlpassword')
     soapheaders = {'Content-type': 'text/xml', 'SOAPAction': 'CUCM:DB ver=' + version}
 
+
+    # Ask user for the name of the CSV file that contains the ownership data
+    print('*' * 120)
+    print()
+    print('Python 3.x Script to Restore CUCM User Ownership Data from CSV File')
+    print()
+    print('Written by James Hawkins, Axonex, July 2017')
+    print()
+    deviceownerdatainputfile = input('Enter the name of the file containing the device ownership data you wish to restore: ')
+    print(deviceownerdatainputfile)
+
     # Get cookies for future AXL requests
     axlgetcookiesresult = axlgetcookies(ipaddr, version, axluser, axlpassword)
     print(axlgetcookiesresult)
@@ -145,24 +136,31 @@ def main():
     else:
         sys.exit('Program has ended due to error!')
 
-    # Get Device Ownership Data
-
-    deviceownerdata_list = axlgetdeviceownerdata(axlgetcookiesresult)
-    print(deviceownerdata_list)
-
     # Create filename for output file in format deviceownerdata-year-month-dom-hour-minute-second.csv
-
     now = datetime.datetime.now()
-    outputfile = 'deviceownerdata-' + now.strftime("%Y-%m-%d-%H-%M-%S") + '.csv'
-    print(outputfile)
+    outputfile = 'deviceownerupdatelog-' + now.strftime("%Y-%m-%d-%H-%M-%S") + '.csv'
 
-    # Write device ownership data to csv file
+    # Open output log csv file
     deviceownerdataoutputfile = open(outputfile, 'w', newline='')
     deviceownerdataoutputwriter = csv.writer(deviceownerdataoutputfile)
-    deviceownerdataoutputwriter.writerow(
-        ['devicepkid', 'devicename', 'description', 'devicemodel', 'fkenduser', 'userid'])
-    for item in deviceownerdata_list:
-        deviceownerdataoutputwriter.writerow(item)
+    deviceownerdataoutputwriter.writerow(['devicepkid', 'devicename', 'fkenduser', 'userid', 'Result'])
+
+    # Open input CSV file and read device pkid and fkenduser values
+    with open(deviceownerdatainputfile, mode='r') as csv_file:
+        csv_dict_reader = DictReader(csv_file)
+        for row in csv_dict_reader:
+            devicepkid = row['devicepkid']
+            devicename = row['devicename']
+            fkenduser = row['fkenduser']
+            userid = row['userid']
+
+            # Call update device owner function
+            update_status = axlupdatedeviceownerdata(axlgetcookiesresult,devicepkid,fkenduser)
+            deviceownerdataoutputwriter.writerow([devicepkid,devicename,fkenduser,userid,update_status])
+            if update_status == "Success":
+                print(f'Success! - User "{userid}" set as the owner of {devicename}')
+            else:
+                print(f'Failure! - User "{userid}" not set as the owner of {devicename}')
 
     deviceownerdataoutputfile.close()
 
@@ -174,7 +172,9 @@ if __name__ == "__main__":
 #### The Output Data
 The csv file output should look similar to that shown below - thanks to [Donat Studios](https://donatstudios.com/CsvToMarkdownTable) for providing a tool to convert CSV data to Markdown.
 
-| devicepkid                           | devicename  | description                     | devicemodel                             | fkenduser                            | userid   | 
-|--------------------------------------|-------------|---------------------------------|-----------------------------------------|--------------------------------------|----------| 
-| 6eb51642-2723-8ceb-0431-6d1f70437fb8 | CSFJHAWKINS | James Hawkins Jabber CSF        | Cisco Unified Client Services Framework | 8c758cf4-da8c-bd00-53be-a0902f1707e1 | jhawkins | 
-| 5a5fbb7b-6b34-7a81-332f-e8bf39bb669d | TCTJHAWKINS | James Hawkins Jabber for iPhone | Cisco Dual Mode for iPhone              | 8c758cf4-da8c-bd00-53be-a0902f1707e1 | jhawkins | 
+| devicepkid                           | devicename      | fkenduser                            | userid     | Result  | 
+|--------------------------------------|-----------------|--------------------------------------|------------|---------| 
+| 6eb51642-2723-8ceb-0431-6d1f70437fb8 | CSFJHAWKINS     | 8c758cf4-da8c-bd00-53be-a0902f1707e1 | jhawkins   | Success | 
+| 5a5fbb7b-6b34-7a81-332f-e8bf39bb669d | TCTJHAWKINS     | 8c758cf4-da8c-bd00-53be-a0902f1707e1 | jhawkins   | Success | 
+
+
