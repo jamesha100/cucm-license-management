@@ -27,16 +27,11 @@ The SQL query we will use to set the device owner by primary extension is shown 
 ```
 UPDATE device SET fkenduser = "fkenduser" WHERE pkid IN (SELECT fkdevice FROM devicenumplanmap WHERE fknumplan = (SELECT pkid FROM numplan WHERE dnorpattern = "telephonenumber") AND numplanindex = 1) AND tkclass = '1'
 ```
-This query will just once as there *where* conditions will match all user type phones.
+
 
 ### The Python Script
-The Python script shown below will retrieve the data listed above and save it to a CSV file. The name of the CSV file includes date and time information so that new output files can be created without overwriting existing files.
-
-The script comprises the following high level steps:
-
-1. Load information needed to connect to the target CUCM server from an ini file.
-2. Connect to the CUCM AXL API using the settings from the and set *fkenduser* value to NULL for all user type phones (not CTI ports or BAT template devices).
+TBC
 
 ```
-
+TBC
 ```
