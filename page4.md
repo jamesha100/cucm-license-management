@@ -8,6 +8,9 @@ To do this we will use a Python script to submit a query to the CUCM API and sto
 - [Article 2 - Basic SQL Commands to Monitor and Update Licensing.](https://jamesha100.github.io/cucm-license-management/page2)
 - [Article 3 - Using the CUCM AXL API.](https://jamesha100.github.io/cucm-license-management/page3)
 - Article 4 - Saving Existing Device Ownership Data
+- [Article 5 - Restoring Saved Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page5)
+- [Article 6 - Clearing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page6)
+- [Article 7 - Setting Device Ownership by Primary Extension](https://jamesha100.github.io/cucm-license-management/page7)
 
 ### SQL Query Used to Retrieve Device Ownership Data
 
