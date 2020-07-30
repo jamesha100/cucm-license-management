@@ -10,6 +10,7 @@ To do this we will use a Python script to submit SQL update queries to the CUCM 
 - [Article 4 - Saving Existing Device Ownership Data.](https://jamesha100.github.io/cucm-license-management/page4)
 - [Article 5 - Restoring Saved Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page5)
 - Article 6 - Clearing Device Ownership Data
+- [Article 7 - Setting Device Ownership by Primary Extension](https://jamesha100.github.io/cucm-license-management/page7)
 
 ### SQL Query Used to clear Device Ownership Data
 
