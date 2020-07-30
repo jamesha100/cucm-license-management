@@ -7,5 +7,8 @@ Having created some SQL queries to read and update device ownership settings we 
 - [Article 2 - Basic SQL Commands to Monitor and Update Licensing.](https://jamesha100.github.io/cucm-license-management/page2)
 - Article 3 - Using the CUCM AXL API.
 - [Article 4 - Saving Existing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page4)
+- [Article 5 - Restoring Saved Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page5)
+- [Article 6 - Clearing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page6)
+- [Article 7 - Setting Device Ownership by Primary Extension](https://jamesha100.github.io/cucm-license-management/page7)
 
 The rest of the article will be completed at a later time.
