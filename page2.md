@@ -8,7 +8,9 @@ This article provides an overview of using the CLI to execute commands with a sp
 - Article 2 - Basic SQL Commands to Monitor and Update Licensing.
 - [Article 3 - Using the CUCM AXL API.](https://jamesha100.github.io/cucm-license-management/page3)
 - [Article 4 - Saving Existing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page4)
-
+- [Article 5 - Restoring Saved Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page5)
+- [Article 6 - Clearing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page6)
+- [Article 7 - Setting Device Ownership by Primary Extension](https://jamesha100.github.io/cucm-license-management/page7)
 ### Accessing the CUCM CLI
 
 The CUCM CLI may be accessed using an SSH client such as [Putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html).
