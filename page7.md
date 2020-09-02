@@ -35,12 +35,13 @@ The Python script shown below will retrieve the information listed below from th
 - **userid** - this is used to report success/failure in the program log.
 - **telephonenumber** - this is used to identify which devices to update with owner information.
 
-The script then loops through the user data and sets the Owner ID (fkenduser) of any device whose line 1 extension matches the user *telephonenumber* value
+The script then loops through the user data and sets the Owner ID (fkenduser) of any device whose line 1 extension matches the user *telephonenumber* value.xxxxxxxxxxxxxxxx
 
 The script comprises the following high level steps:
 
 1. Load information needed to connect to the target CUCM server from an ini file.
 2. Connect to the CUCM AXL API using the settings from the ini file and download *pkid*, *userid* and *telephonenumber* for all users in the *enduser* table - these are stored as an ordered list.
+3. 
 
 
 ```
@@ -135,27 +136,6 @@ def axlsetdeviceowner(cookies, fkenduser, telephonenumber):
         devices_updated = axlsetdeviceownersoapresponse_dict['soapenv:Envelope']['soapenv:Body']['ns:executeSQLUpdateResponse']['return']['rowsUpdated']
         return devices_updated
 
-        '''
-        # Remove unwanted parts of the dictionary to leave the data we require
-        axlgetenduserdatasoapresponse_subdict = \
-            axlgetenduserdatasoapresponse_dict['soapenv:Envelope']['soapenv:Body']['ns:executeSQLQueryResponse'] \
-                ['return']['row']
-        pprint.pprint(axlgetenduserdatasoapresponse_subdict)
-
-        return axlgetenduserdatasoapresponse_subdict
-        
-    
-        if '200' in str(axlsetdeviceownersoapresponse):
-            # request is successful
-            device_update = 'Success'
-            pprint.pprint(axlsetdeviceownersoapresponse.text)
-        else:
-            # request is unsuccessful
-            device_update = 'Failure'
-
-        return device_update
-        '''
-
     except requests.exceptions.Timeout:
         print('IP address not found! ')
     except requests.exceptions.ConnectionError:
@@ -195,6 +175,15 @@ def main():
 
     # Set device ownership via AXL function using telephonenumber to primary extension mapping
 
+    # Create filename for output file in format setownerbyprimaryextensiondatalog-year-month-dom-hour-minute-second.csv
+    now = datetime.datetime.now()
+    outputfile = 'setownerbyprimaryextensiondatalog-' + now.strftime("%Y-%m-%d-%H-%M-%S") + '.csv'
+
+    # Open output log csv file
+    setownerbyprimaryextensiondataoutputfile = open(outputfile, 'w', newline='')
+    setownerbyprimaryextensiondataoutputwriter = csv.writer(setownerbyprimaryextensiondataoutputfile)
+    setownerbyprimaryextensiondataoutputwriter.writerow(['fkenduser', 'userid', 'telephonenumber', 'userid', 'DevicesUpdated'])
+
     for item in enduserdata_dict:
         fkenduser = (item['pkid'])
         userid = (item['userid'])
@@ -204,42 +193,17 @@ def main():
         if str(telephonenumber) != 'None':
             devices_updated = axlsetdeviceowner(axlgetcookiesresult, fkenduser, telephonenumber)
             print(f'{fkenduser}, {userid}, {telephonenumber}, {devices_updated}')
+            setownerbyprimaryextensiondataoutputwriter.writerow([fkenduser, userid, telephonenumber, devices_updated])
         else:
             print(f'{fkenduser}, {userid}, {telephonenumber}, no phone number in user record')
+            setownerbyprimaryextensiondataoutputwriter.writerow([fkenduser, userid, telephonenumber, '0'])
 
-
-    '''
-    # Create filename for output file in format deviceownerdata-year-month-dom-hour-minute-second.csv
-    now = datetime.datetime.now()
-    outputfile = 'deviceownerupdatelog-' + now.strftime("%Y-%m-%d-%H-%M-%S") + '.csv'
-
-    # Open output log csv file
-    deviceownerdataoutputfile = open(outputfile, 'w', newline='')
-    deviceownerdataoutputwriter = csv.writer(deviceownerdataoutputfile)
-    deviceownerdataoutputwriter.writerow(['devicepkid', 'devicename', 'fkenduser', 'userid', 'Result'])
-
-    # Open input CSV file and read device pkid and fkenduser values
-    with open(deviceownerdatainputfile, mode='r') as csv_file:
-        csv_dict_reader = DictReader(csv_file)
-        for row in csv_dict_reader:
-            devicepkid = row['devicepkid']
-            devicename = row['devicename']
-            fkenduser = row['fkenduser']
-            userid = row['userid']
-
-            # Call update device owner function
-            update_status = axlupdatedeviceownerdata(axlgetcookiesresult,devicepkid,fkenduser)
-            deviceownerdataoutputwriter.writerow([devicepkid,devicename,fkenduser,userid,update_status])
-            if update_status == "Success":
-                print(f'Success! - User "{userid}" set as the owner of {devicename}')
-            else:
-                print(f'Failure! - User "{userid}" not set as the owner of {devicename}')
-
-    deviceownerdataoutputfile.close()
-    '''
+    setownerbyprimaryextensiondataoutputfile.close()
+ 
 
 ########################################################################################################################
 
 if __name__ == "__main__":
     main()
+
 ```
