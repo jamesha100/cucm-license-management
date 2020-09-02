@@ -41,7 +41,7 @@ The script comprises the following high level steps:
 
 1. Load information needed to connect to the target CUCM server from an ini file.
 2. Connect to the CUCM AXL API using the settings from the ini file and download *pkid*, *userid* and *telephonenumber* for all users in the *enduser* table - these are stored as an ordered list.
-3. 
+3. Loop the the list of users obtained in the previous step and set the *OwnerId* of any device which has a Directory Number assigned to Line 1 that matches the user's *telephonenumber* value to the *fkenduser* value of the user. As this loop executes the result of the update is written to a CSV file named *setownerbyprimaryextensiondatalog-yyyy-mm-dd-hh-mm-ss.csv*
 
 
 ```
