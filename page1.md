@@ -10,6 +10,7 @@ These strategies are based upon using SQL database queries to collect and update
 - [Article 5 - Restoring Saved Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page5)
 - [Article 6 - Clearing Device Ownership Data](https://jamesha100.github.io/cucm-license-management/page6)
 - [Article 7 - Setting Device Ownership by Primary Extension](https://jamesha100.github.io/cucm-license-management/page7)
+- [Article 8 - Allocating Owners to Extension Mobility Devices](https://jamesha100.github.io/cucm-license-management/page8)
 
 **Note that no liability is accepted for any system damage caused as a result of following instructions in this series of articles.**
 
